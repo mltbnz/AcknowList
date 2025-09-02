@@ -131,7 +131,7 @@ public struct AcknowListRowSwiftUIView: View {
     public var body: some View {
         if acknowledgement.text != nil || canFetchLicenseFromGitHubAndIsGitHubRepository(acknowledgement) {
             NavigationLink(destination: AcknowSwiftUIView(acknowledgement: acknowledgement)) {
-                Text(acknowledgement.title)
+              acknowTitle
             }
         }
         else if let repository = acknowledgement.repository,
@@ -139,14 +139,25 @@ public struct AcknowListRowSwiftUIView: View {
             Button(action: {
                 repository.openWithDefaultBrowser()
             }) {
-                Text(acknowledgement.title)
+              acknowTitle
                     .foregroundColor(.primary)
             }
         }
         else {
-            Text(acknowledgement.title)
+          acknowTitle
         }
     }
+  
+  @ViewBuilder
+  private var acknowTitle: some View {
+    HStack {
+      Text(acknowledgement.title)
+      if let version = acknowledgement.version, !version.isEmpty {
+        Text("(\(version))")
+          .foregroundColor(.secondary)
+      }
+    }
+  }
 
     private func canOpenRepository(for url: URL) -> Bool {
         guard let scheme = url.scheme else {
@@ -179,7 +190,7 @@ struct AcknowListSwiftUI_Previews: PreviewProvider {
         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     """
     static let acks = [
-        Acknow(title: "Title 1", text: license),
+        Acknow(title: "Title 123", text: license, version: "2.3.5"),
         Acknow(title: "Title 2", text: license),
         Acknow(title: "Title 3", text: license),
     ]
