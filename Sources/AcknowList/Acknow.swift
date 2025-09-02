@@ -38,16 +38,34 @@ public struct Acknow {
     /// The repository URL (for instance the package’s repository).
     public let repository: URL?
 
+    /// The resolved semantic version of the dependency, when available (e.g., from Package.resolved).
+    public let version: String?
+
+    /// The resolved revision/commit SHA of the dependency, when available (e.g., from Package.resolved).
+    public let revision: String?
+
     /// Returns an object initialized from the given parameters.
     ///
     /// - Parameters:
     ///   - title: The acknowledgement title (for instance: the pod’s name).
     ///   - text: The acknowledgement body text (for instance: the pod’s license).
     ///   - license: The acknowledgement license (for instance the pod’s license type).
-    public init(title: String, text: String? = nil, license: String? = nil, repository: URL? = nil) {
+    ///   - repository: The repository URL (for instance the package’s repository).
+    ///   - version: The resolved semantic version of the dependency, when available.
+    ///   - revision: The resolved revision/commit SHA of the dependency, when available.
+  public init(
+    title: String,
+    text: String? = nil,
+    license: String? = nil,
+    repository: URL? = nil,
+    version: String? = nil,
+    revision: String? = nil
+  ) {
         self.title = title
         self.text = text
         self.license = license
         self.repository = repository
+        self.version = version
+        self.revision = revision
     }
 }

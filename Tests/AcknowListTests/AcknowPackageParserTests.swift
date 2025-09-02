@@ -28,6 +28,9 @@ class AcknowPackageParserTests: XCTestCase {
         XCTAssertEqual(first.repository, URL(string: "https://github.com/vtourraine/AcknowList.git"))
         XCTAssertNil(first.text)
         XCTAssertNil(first.license)
+        // New: verify version and revision parsed from v1 state
+        XCTAssertEqual(first.version, "2.1.0")
+        XCTAssertEqual(first.revision, "e66b9541c1902ced4979b3c214a5def2cf96f015")
     }
 
     func testParsePackageVersion2() throws {
@@ -44,5 +47,8 @@ class AcknowPackageParserTests: XCTestCase {
         XCTAssertEqual(first.repository, URL(string: "https://github.com/vtourraine/ThirdPartyMailer.git"))
         XCTAssertNil(first.text)
         XCTAssertNil(first.license)
+        // New: verify version and revision parsed from v2 state
+        XCTAssertEqual(first.version, "2.1.0")
+        XCTAssertEqual(first.revision, "44c1cfaa6969963f22691aa67f88a69e3b6d651f")
     }
 }

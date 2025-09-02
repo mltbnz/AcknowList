@@ -36,17 +36,38 @@ open class AcknowPackageDecoder: AcknowDecoder {
     public func decode(from data: Data) throws -> AcknowList {
         let decoder = JSONDecoder()
         if let root = try? decoder.decode(JSONV1Root.self, from: data) {
-            let acknows = root.object.pins.map { Acknow(title: $0.package, repository: URL(string: $0.repositoryURL)) }
+            // v1 support kept for backward compatibility.
+            let acknows = root.object.pins.map { pin in
+                Acknow(
+                    title: pin.package,
+                    text: nil,
+                    license: nil,
+                    repository: URL(string: pin.repositoryURL),
+                    version: pin.state?.version,
+                    revision: pin.state?.revision
+                )
+            }
             return AcknowList(headerText: nil, acknowledgements: acknows, footerText: nil)
         }
 
+        // v2+ parsing
         let root = try decoder.decode(JSONV2Root.self, from: data)
-        let acknows =  root.pins.map { Acknow(title: $0.identity, repository: URL(string: $0.location)) }
+        let acknows = root.pins.map { pin in
+            Acknow(
+                title: pin.identity,
+                text: nil,
+                license: nil,
+                repository: URL(string: pin.location),
+                version: pin.state?.version,
+                revision: pin.state?.revision
+            )
+        }
         return AcknowList(headerText: nil, acknowledgements: acknows, footerText: nil)
     }
 
     // MARK: - JSON format
 
+    // Version 1 structure (Package.resolved with "object": { "pins": [...] }, version: 1)
     struct JSONV1Root: Codable {
         let object: JSONV1Object
         let version: Int
@@ -59,8 +80,16 @@ open class AcknowPackageDecoder: AcknowDecoder {
     struct JSONV1Pin: Codable {
         let package: String
         let repositoryURL: String
+        let state: JSONV1State?
     }
 
+    struct JSONV1State: Codable {
+        let branch: String?
+        let revision: String?
+        let version: String?
+    }
+
+    // Version 2+ structure (top-level "pins": [...], version: 2 or later)
     struct JSONV2Root: Codable {
         let pins: [JSONV2Pin]
         let version: Int
@@ -69,5 +98,12 @@ open class AcknowPackageDecoder: AcknowDecoder {
     struct JSONV2Pin: Codable {
         let identity: String
         let location: String
+        let state: JSONV2State?
+    }
+
+    struct JSONV2State: Codable {
+        let revision: String?
+        let version: String?
+        // Future fields (e.g., branch) can be added here if needed.
     }
 }
